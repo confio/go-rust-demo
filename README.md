@@ -15,6 +15,19 @@ involves compiling rust -> C library, and linking that library to the Go code.
 For ergonomics of the user, we will include pre-compiled libraries to easily
 link with, and Go developers should just be able to import this directly.
 
+### Test it out
+
+Simply run `make` to compile the rust code, cgo, and then run tests in Go. This assumes
+a recent rust stable and Go 1.12+ installed.
+
+In smaller pieces:
+
+* `make build-rust` - compiles the rust code into a cdylib and copies it into the `./api`
+directory, along with the `cbindgen` auto-generated header file.
+* `make build-go` - compiles all the go code, links in the rust library
+* `make test` - runs the go tests (which also builds the go code in debug mode). 
+These ensure a clean end-to-end handling, passing strings, handling errors, etc.
+
 ## Gotchas
 
 Beyond learning the intracacies of both cgo and rust ffi, there are two points
