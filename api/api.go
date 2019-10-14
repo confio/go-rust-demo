@@ -1,6 +1,6 @@
 package api
 
-// #cgo LDFLAGS: -Wl,-rpath,${SRCDIR} -L${SRCDIR} -lgo_cosmwasm
+// #cgo LDFLAGS: -Wl,-rpath,${SRCDIR} -L${SRCDIR} -lgo_rust_demo
 // #include <stdlib.h>
 // #include "bindings.h"
 import "C"
