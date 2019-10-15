@@ -1,15 +1,20 @@
 package api
 
-// #cgo LDFLAGS: -Wl,-rpath,${SRCDIR} -L${SRCDIR} -lgo_rust_demo
-// #include <stdlib.h>
-// #include "bindings.h"
+/*
+#cgo CFLAGS: -I .
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR} -L${SRCDIR} -lgo_rust_demo
+
+#include "bindings.h"
+*/
 import "C"
 
-import "fmt"
-import "unsafe"
+import (
+	"fmt"
+)
 
 // nice aliases to the rust names
 type i32 = C.int32_t
+type i64 = C.int64_t
 type u8 = C.uint8_t
 type u8_ptr = *C.uint8_t
 type usize = C.uintptr_t
@@ -46,6 +51,14 @@ func RandomMessage(guess int32) (string, error) {
 	return string(receiveSlice(res)), nil
 }
 
+func DemoDBAccess(kv KVStore, key []byte) []byte {
+	db := buildDB(kv)
+	buf := sendSlice(key)
+	res := C.db_access(db, buf)
+	freeAfterSend(buf)
+	return receiveSlice(res)
+}
+
 /**** To error module ***/
 
 func errorWithMessage(err error, b C.Buffer) error {
@@ -54,36 +67,4 @@ func errorWithMessage(err error, b C.Buffer) error {
 		return err
 	}
 	return fmt.Errorf("%s", string(msg))
-}
-
-/*** To memory module **/
-
-func sendSlice(s []byte) C.Buffer {
-	if s == nil {
-		return C.Buffer{ptr: u8_ptr(nil), len: usize(0), cap: usize(0)}
-	}
-	return C.Buffer{
-		ptr: u8_ptr(C.CBytes(s)),
-		len: usize(len(s)),
-		cap: usize(len(s)),
-	}
-}
-
-func receiveSlice(b C.Buffer) []byte {
-	if emptyBuf(b) {
-		return nil
-	}
-	res := C.GoBytes(unsafe.Pointer(b.ptr), cint(b.len))
-	C.free_rust(b)
-	return res
-}
-
-func freeAfterSend(b C.Buffer) {
-	if !emptyBuf(b) {
-		C.free(unsafe.Pointer(b.ptr))
-	}
-}
-
-func emptyBuf(b C.Buffer) bool {
-	return b.ptr == u8_ptr(nil) || b.len == usize(0) || b.cap == usize(0)
 }

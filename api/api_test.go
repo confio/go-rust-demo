@@ -1,6 +1,8 @@
 package api
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestAdd(t *testing.T) {
 	res := Add(5, 7)
@@ -84,5 +86,48 @@ func TestRandomMessage(t *testing.T) {
 	}
 	if res != "You are a winner!" {
 		t.Fatalf("Unexpected result: %s", res)
+	}
+}
+
+/** test helpers **/
+
+type Lookup struct {
+	data map[string]string
+}
+
+func NewLookup() *Lookup {
+	return &Lookup{data: make(map[string]string)}
+}
+
+func (l *Lookup) Get(key []byte) []byte {
+	val := l.data[string(key)]
+	return []byte(val)
+}
+
+func (l *Lookup) Set(key, value []byte) {
+	l.data[string(key)] = string(value)
+}
+
+func TestDemoDBAccess(t *testing.T) {
+	l := NewLookup()
+	l.Set([]byte("foo"), []byte("long text that fills the buffer"))
+	l.Set([]byte("bar"), []byte("short"))
+
+	// long
+	res := DemoDBAccess(l, []byte("foo"))
+	if string(res) != "Got value: long text that fills the buffer" {
+		t.Errorf("Unexpected result (long): %s", string(res))
+	}
+
+	// short
+	res = DemoDBAccess(l, []byte("bar"))
+	if string(res) != "Got value: short" {
+		t.Errorf("Unexpected result (short): %s", string(res))
+	}
+
+	// missing
+	res = DemoDBAccess(l, []byte("missing"))
+	if string(res) != "Got value: <nil>" {
+		t.Errorf("Unexpected result (missing): %s", string(res))
 	}
 }

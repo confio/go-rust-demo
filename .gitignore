@@ -1,6 +1,7 @@
 /target
 **/*.rs.bk
 *.iml
+_obj
 
 # remove these for production
 Cargo.lock
