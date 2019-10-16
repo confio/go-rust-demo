@@ -11,7 +11,8 @@
 
 typedef struct Buffer {
   uint8_t *ptr;
-  uintptr_t size;
+  uintptr_t len;
+  uintptr_t cap;
 } Buffer;
 
 int32_t add(int32_t a, int32_t b);

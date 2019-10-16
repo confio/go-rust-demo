@@ -62,11 +62,12 @@ func getError() error {
 
 func sendSlice(s []byte) C.Buffer {
 	if s == nil {
-		return C.Buffer{ptr: u8_ptr(nil), size: usize(0)};
+		return C.Buffer{ptr: u8_ptr(nil), len: usize(0), cap: usize(0)};
 	}
 	return C.Buffer{
 		ptr: u8_ptr(C.CBytes(s)),
-		size: usize(len(s)),
+		len: usize(len(s)),
+		cap: usize(len(s)),
 	}
 }
 
@@ -74,7 +75,7 @@ func receiveSlice(b C.Buffer) []byte {
 	if emptyBuf(b) {
 		return nil
 	}
-	res := C.GoBytes(unsafe.Pointer(b.ptr), cint(b.size))
+	res := C.GoBytes(unsafe.Pointer(b.ptr), cint(b.len))
 	C.free_rust(b)
 	return res
 }
@@ -86,7 +87,7 @@ func freeAfterSend(b C.Buffer) {
 }
 
 func emptyBuf(b C.Buffer) bool {
-	return b.ptr == u8_ptr(nil) || b.size == usize(0)
+	return b.ptr == u8_ptr(nil) || b.len == usize(0) || b.cap == usize(0)
 }
 
 

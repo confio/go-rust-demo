@@ -3,7 +3,7 @@ use errno::{set_errno, Errno};
 use std::cell::RefCell;
 use std::fmt::Display;
 
-use crate::memory::{release_vec, Buffer};
+use crate::memory::{Buffer};
 
 thread_local! {
     static LAST_ERROR: RefCell<Option<String>> = RefCell::new(None);
@@ -12,7 +12,7 @@ thread_local! {
 #[no_mangle]
 pub extern "C" fn get_last_error() -> Buffer {
     let msg = take_last_error().unwrap_or_default();
-    release_vec(msg.into_bytes())
+    Buffer::from_vec(msg.into_bytes())
 }
 
 pub fn update_last_error(msg: String) {
