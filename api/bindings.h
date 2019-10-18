@@ -24,8 +24,6 @@ int32_t divide(int32_t num, int32_t div, Buffer *err);
 
 void free_rust(Buffer buf);
 
-Buffer get_last_error(void);
-
 Buffer greet(Buffer name);
 
-Buffer may_panic(int32_t guess);
+Buffer may_panic(int32_t guess, Buffer *err);

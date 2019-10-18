@@ -39,9 +39,10 @@ func Divide(a, b int32) (int32, error) {
 }
 
 func RandomMessage(guess int32) (string, error) {
-	res, err := C.may_panic(i32(guess))
+    buf := C.Buffer{}
+	res, err := C.may_panic(i32(guess), &buf)
 	if err != nil {
-		return "", getError()
+		return "", errorWithMessage(err, buf)
 	}
 	return string(receiveSlice(res)), nil
 }
@@ -53,16 +54,6 @@ func errorWithMessage(err error, b C.Buffer) error {
 	msg := receiveSlice(b)
 	if msg == nil {
 		return err
-	}
-	return fmt.Errorf("%s", string(msg))
-}
-
-// returns the last error message (or nil if none returned)
-func getError() error {
-	// TODO: add custom error type
-	msg := receiveSlice(C.get_last_error())
-	if msg == nil {
-		return nil
 	}
 	return fmt.Errorf("%s", string(msg))
 }
