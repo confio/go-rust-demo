@@ -30,9 +30,10 @@ func Greet(name []byte) []byte {
 }
 
 func Divide(a, b int32) (int32, error) {
-	res, err := C.divide(i32(a), i32(b))
+    buf := C.Buffer{}
+	res, err := C.divide(i32(a), i32(b), &buf)
 	if err != nil {
-		return 0, getError()
+		return 0, errorWithMessage(err, buf)
 	}
 	return int32(res), nil
 }
@@ -47,6 +48,14 @@ func RandomMessage(guess int32) (string, error) {
 
 
 /**** To error module ***/
+
+func errorWithMessage(err error, b C.Buffer) error {
+	msg := receiveSlice(b)
+	if msg == nil {
+		return err
+	}
+	return fmt.Errorf("%s", string(msg))
+}
 
 // returns the last error message (or nil if none returned)
 func getError() error {

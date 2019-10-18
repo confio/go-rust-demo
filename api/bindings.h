@@ -20,7 +20,7 @@ int32_t add(int32_t a, int32_t b);
 /**
  * divide returns the rounded (i32) result, returns a C error if div == 0
  */
-int32_t divide(int32_t num, int32_t div);
+int32_t divide(int32_t num, int32_t div, Buffer *err);
 
 void free_rust(Buffer buf);
 

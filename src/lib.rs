@@ -4,7 +4,7 @@ mod memory;
 pub use error::get_last_error;
 pub use memory::{free_rust, Buffer};
 
-use error::{handle_c_error, update_last_error};
+use error::{handle_c_error};
 use std::panic::catch_unwind;
 
 #[no_mangle]
@@ -22,9 +22,14 @@ pub extern "C" fn greet(name: Buffer) -> Buffer {
 
 /// divide returns the rounded (i32) result, returns a C error if div == 0
 #[no_mangle]
-pub extern "C" fn divide(num: i32, div: i32) -> i32 {
+pub extern "C" fn divide(num: i32, div: i32, err: Option<&mut Buffer>) -> i32 {
     if div == 0 {
-        update_last_error("Cannot divide by zero".to_string());
+        // this replace "update_last_error"
+        if let Some(mb) = err  {
+            *mb = Buffer::from_vec(b"Cannot divide by zero".to_vec());
+            use errno::{set_errno, Errno};
+            set_errno(Errno(1));
+        }
         return 0;
     }
     num / div
