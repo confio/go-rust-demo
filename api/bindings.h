@@ -22,10 +22,14 @@ typedef struct db_t {
 
 } db_t;
 
-typedef struct DB {
-  db_t *state;
+typedef struct DB_vtable {
   int64_t (*c_get)(db_t*, Buffer, Buffer);
   void (*c_set)(db_t*, Buffer, Buffer);
+} DB_vtable;
+
+typedef struct DB {
+  db_t *state;
+  DB_vtable vtable;
 } DB;
 
 int32_t add(int32_t a, int32_t b);
