@@ -3,9 +3,8 @@ mod memory;
 
 pub use memory::{free_rust, Buffer};
 
-use error::{handle_c_error};
+use crate::error::{handle_c_error, set_error};
 use std::panic::catch_unwind;
-use crate::error::update_last_error;
 
 #[no_mangle]
 pub extern "C" fn add(a: i32, b: i32) -> i32 {
@@ -24,7 +23,7 @@ pub extern "C" fn greet(name: Buffer) -> Buffer {
 #[no_mangle]
 pub extern "C" fn divide(num: i32, div: i32, err: Option<&mut Buffer>) -> i32 {
     if div == 0 {
-        update_last_error("Cannot divide by zero".to_string(), err);
+        set_error("Cannot divide by zero".to_string(), err);
         return 0;
     }
     num / div

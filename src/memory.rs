@@ -32,7 +32,9 @@ impl Buffer {
     // consume must only be used on memory previously released by from_vec
     // when the Vec is out of scope, it will deallocate the memory previously referenced by Buffer
     pub unsafe fn consume(self) -> Vec<u8> {
-        if self.is_empty() { return Vec::new() }
+        if self.is_empty() {
+            return Vec::new();
+        }
         let mut v = Vec::from_raw_parts(self.ptr, self.len, self.cap);
         v.shrink_to_fit();
         v

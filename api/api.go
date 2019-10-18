@@ -15,7 +15,6 @@ type u8_ptr = *C.uint8_t
 type usize = C.uintptr_t
 type cint = C.int
 
-
 func Add(a int32, b int32) int32 {
 	return (int32)(C.add(i32(a), i32(b)))
 }
@@ -30,7 +29,7 @@ func Greet(name []byte) []byte {
 }
 
 func Divide(a, b int32) (int32, error) {
-    buf := C.Buffer{}
+	buf := C.Buffer{}
 	res, err := C.divide(i32(a), i32(b), &buf)
 	if err != nil {
 		return 0, errorWithMessage(err, buf)
@@ -39,14 +38,13 @@ func Divide(a, b int32) (int32, error) {
 }
 
 func RandomMessage(guess int32) (string, error) {
-    buf := C.Buffer{}
+	buf := C.Buffer{}
 	res, err := C.may_panic(i32(guess), &buf)
 	if err != nil {
 		return "", errorWithMessage(err, buf)
 	}
 	return string(receiveSlice(res)), nil
 }
-
 
 /**** To error module ***/
 
@@ -62,7 +60,7 @@ func errorWithMessage(err error, b C.Buffer) error {
 
 func sendSlice(s []byte) C.Buffer {
 	if s == nil {
-		return C.Buffer{ptr: u8_ptr(nil), len: usize(0), cap: usize(0)};
+		return C.Buffer{ptr: u8_ptr(nil), len: usize(0), cap: usize(0)}
 	}
 	return C.Buffer{
 		ptr: u8_ptr(C.CBytes(s)),
@@ -89,5 +87,3 @@ func freeAfterSend(b C.Buffer) {
 func emptyBuf(b C.Buffer) bool {
 	return b.ptr == u8_ptr(nil) || b.len == usize(0) || b.cap == usize(0)
 }
-
-

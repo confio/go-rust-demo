@@ -1,11 +1,10 @@
 use errno::{set_errno, Errno};
 use std::fmt::Display;
 
-use crate::memory::{Buffer};
+use crate::memory::Buffer;
 
-
-pub fn update_last_error(msg: String, errout: Option<&mut Buffer>) {
-    if let Some(mb) = errout  {
+pub fn set_error(msg: String, errout: Option<&mut Buffer>) {
+    if let Some(mb) = errout {
         *mb = Buffer::from_vec(msg.into_bytes());
     }
     // Question: should we set errno to something besides generic 1 always?
@@ -20,7 +19,7 @@ where
     match r {
         Ok(t) => t,
         Err(e) => {
-            update_last_error(e.to_string(), errout);
+            set_error(e.to_string(), errout);
             T::default()
         }
     }
