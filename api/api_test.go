@@ -114,20 +114,38 @@ func TestDemoDBAccess(t *testing.T) {
 	l.Set([]byte("bar"), []byte("short"))
 
 	// long
-	res := DemoDBAccess(l, []byte("foo"))
+	res, err := DemoDBAccess(l, []byte("foo"))
+	if err != nil {
+		t.Fatalf("Expected no err, got %s", err)
+	}
 	if string(res) != "Got value: long text that fills the buffer" {
 		t.Errorf("Unexpected result (long): %s", string(res))
 	}
 
 	// short
-	res = DemoDBAccess(l, []byte("bar"))
+	res, err = DemoDBAccess(l, []byte("bar"))
+	if err != nil {
+		t.Fatalf("Expected no err, got %s", err)
+	}
 	if string(res) != "Got value: short" {
 		t.Errorf("Unexpected result (short): %s", string(res))
 	}
 
 	// missing
-	res = DemoDBAccess(l, []byte("missing"))
-	if string(res) != "Got value: <nil>" {
-		t.Errorf("Unexpected result (missing): %s", string(res))
+	res, err = DemoDBAccess(l, []byte("missing"))
+	if err == nil {
+		t.Fatal("Expected err, but got none")
+	}
+	if err.Error() != "no data" {
+		t.Errorf("Unexpected error (missing): %s", err.Error())
+	}
+
+	// nil
+	res, err = DemoDBAccess(l, nil)
+	if err == nil {
+		t.Fatal("Expected err, but got none")
+	}
+	if err.Error() != "no input" {
+		t.Errorf("Unexpected error (nil): %s", err.Error())
 	}
 }

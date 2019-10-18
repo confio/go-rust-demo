@@ -51,12 +51,16 @@ func RandomMessage(guess int32) (string, error) {
 	return string(receiveSlice(res)), nil
 }
 
-func DemoDBAccess(kv KVStore, key []byte) []byte {
+func DemoDBAccess(kv KVStore, key []byte) ([]byte, error) {
 	db := buildDB(kv)
 	buf := sendSlice(key)
-	res := C.db_access(db, buf)
+	msg := C.Buffer{}
+	res, err := C.db_access(db, buf, &msg)
 	freeAfterSend(buf)
-	return receiveSlice(res)
+	if err != nil {
+		return nil, errorWithMessage(err, msg)
+	}
+	return receiveSlice(res), nil
 }
 
 /**** To error module ***/

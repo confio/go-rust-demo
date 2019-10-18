@@ -30,7 +30,7 @@ typedef struct DB {
 
 int32_t add(int32_t a, int32_t b);
 
-Buffer db_access(DB db, Buffer key);
+Buffer db_access(DB db, Buffer key, Buffer *err);
 
 /**
  * divide returns the rounded (i32) result, returns a C error if div == 0
